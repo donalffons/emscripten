@@ -1157,7 +1157,12 @@ class libpthread(AsanInstrumentedLibrary, MuslInternalLibrary, MTLibrary):
   cflags = ['-O2']
 
   def get_files(self):
-    files = [shared.path_from_root('system', 'lib', 'pthread', 'emscripten_atomic.c')]
+    files = files_in_path(
+      path_components=['system', 'lib', 'pthread'],
+      filenames=[
+        'emscripten_atomic.c',
+        'sleep.c'
+      ])
     files += files_in_path(
         path_components=['system', 'lib', 'libc', 'musl', 'src', 'thread'],
         filenames=['pthread_self.c'])
