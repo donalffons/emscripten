@@ -33,6 +33,16 @@ var LibraryPThreadStub = {
     _pthread_cleanup_push.level = __ATEXIT__.length;
   },
 
+  // When pthreads is not enabled, we can't use the Atomics futex api to do proper sleeps, so simulate a busy spin wait loop instead.
+  emscripten_thread_sleep__deps: ['emscripten_get_now'],
+  emscripten_thread_sleep: function(msecs) {
+    // We're single-threaded, so use a busy loop. Super-ugly.
+    var start = _emscripten_get_now();
+    while (_emscripten_get_now() - start < msecs) {
+      // Do nothing.
+    }
+  },
+
   {{{ USE_LSAN || USE_ASAN ? 'emscripten_builtin_' : '' }}}pthread_create: function() {
     return {{{ cDefine('EAGAIN') }}};
   },
